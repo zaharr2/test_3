@@ -3,25 +3,26 @@
 </template>
 
 <script>
-  export default {
-    name: "Pairs",
-    mounted() {
-      this.getPairs()
-    },
-    methods: {
-      getPairs() {
-        console.log(process.env.VUE_APP_API_URL)
-        let path = process.env.VUE_APP_API_URL + "/instrument/active"
-        fetch(path, { method: 'GET' })
-          .then(response => response.json())
-          .then(data => {
-            console.log("data", JSON.parse(data))
-          }).catch(error => {
-            console.log("error:", error)
-          })
-      }
+export default {
+  name: "Pairs",
+  mounted() {
+    this.getPairs()
+  },
+  methods: {
+    getPairs() {
+      console.log(process.env.VUE_APP_API_URL);
+      let path = process.env.VUE_APP_API_URL + "/instrument/active";
+      fetch(path, { method: "GET" })
+        .then(response => response.json())
+        .then(data => {
+          console.log("getPairs", JSON.parse(data));
+        })
+        .catch(error => {
+          console.log("getPairs error:", error);
+        })
     }
   }
+}
 </script>
 
 <style scoped lang="scss">

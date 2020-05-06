@@ -21,6 +21,13 @@ var apiUrl = process.env.API_URL;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
+var getOrder = require('./get_order');
+var getTradeBucketed = require('./get_trade_bucketed');
+var getInstrumentActive = require('./get_instrument_active');
+
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
 app.get('/', (req, res) => {
   res.json({
     message: "Hello world!!!"
@@ -74,44 +81,21 @@ app.get('/order', (req, res) => {
     });
   });
 });
+//##########################################################################   ROUTES
+//
+//##########################################################################   GET /instrument/active
 
-//##########################################################################   /instrument/active
+app.get('/instrument/active', getInstrumentActive.list);
 
-app.get('/instrument/active', (req, res) => {
-  var verb = 'GET';
-  var path = '/api/v1/instrument/active';
-  var expires = Math.round(new Date().getTime() / 1000) + 60; // 1 min in the future
-  var data = {
-    symbol: 'XBTUSD',
-    lastPrice: 590
-  };
-  var postBody = JSON.stringify(data);
-  var signature = crypto.createHmac('sha256', apiSecret).update(verb + path + expires.toFixed() + postBody).digest('hex');
-  var headers = {
-    'content-type': 'application/json',
-    'Accept': 'application/json',
-    'X-Requested-With': 'XMLHttpRequest',
-    'api-expires': expires,
-    'api-key': apiKey,
-    'api-signature': signature
-  };
+//##########################################################################   GET /trade/bucketed
 
-  const requestOptions = {
-    headers: headers,
-    url: apiUrl + path,
-    method: 'GET',
-    body: postBody
-  };
+app.get('/trade/bucketed', getTradeBucketed.list);
 
-  request(requestOptions, (error, response, body) => {
-    if (error) {
-      res.json({
-        error: error
-      });
-    }
-    res.json(body);
-  });
-});
+//##########################################################################   GET /order
+
+app.get('/order', getOrder.list);
+
+//##########################################################################   END
 
 const port = process.env.PORT || 4000;
 app.listen(port, () => {
