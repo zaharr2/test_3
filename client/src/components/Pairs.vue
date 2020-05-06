@@ -10,7 +10,6 @@ export default {
   },
   methods: {
     getPairs() {
-      console.log(process.env.VUE_APP_API_URL);
       let path = process.env.VUE_APP_API_URL + "/instrument/active";
       fetch(path, { method: "GET" })
         .then(response => response.json())
