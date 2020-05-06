@@ -1,4 +1,4 @@
-var request = require('request');
+var request = require('request-promise');
 var crypto = require('crypto');
 var verb = 'GET';
 var path = '/order';
@@ -19,18 +19,13 @@ var headers = {
 const requestOptions = {
   headers: headers,
   url: process.env.API_URL + path,
-  method: 'GET'
+  method: 'GET',
+  json: true
 };
 
 exports.list = function(req, res) {
-  request(requestOptions, (error, response, body) => {
-    if (error) {
-      res.json({
-        error: error
-      });
-    }
-
-    let parserBody = JSON.parse(body).map(el => {
+  request(requestOptions).then(response => {
+    res.json(response.map(el => {
       return {
         orderID: el.orderID,
         symbol: el.symbol,
@@ -40,8 +35,11 @@ exports.list = function(req, res) {
         price: el.price,
         ordStatus: el.ordStatus
       }
+    }));
+  }).catch(error => {
+    console.log("error", error)
+    res.json({
+      error: error
     });
-
-    res.json(parserBody);
-  });
+  })
 };

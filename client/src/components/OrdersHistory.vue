@@ -6,15 +6,14 @@
   export default {
     name: "OrdersHistory",
     mounted() {
-      this.getOrdersHistory()
+      // this.getOrdersHistory()
     },
     methods: {
       getOrdersHistory() {
         let path = process.env.VUE_APP_API_URL + "/order";
         fetch(path, { method: "GET" })
-          .then(response => response.json())
-          .then(data => {
-            console.log("OrdersHistory", JSON.parse(data));
+          .then(response => {
+            console.log("getPairs", JSON.parse(response.data));
           })
           .catch(error => {
             console.log("OrdersHistory error:", error);

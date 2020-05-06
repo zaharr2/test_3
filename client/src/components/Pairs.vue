@@ -14,7 +14,7 @@ export default {
       fetch(path, { method: "GET" })
         .then(response => response.json())
         .then(data => {
-          console.log("getPairs", JSON.parse(data));
+          console.log("getPairs", data);
         })
         .catch(error => {
           console.log("getPairs error:", error);

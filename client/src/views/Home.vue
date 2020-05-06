@@ -18,7 +18,38 @@ import OrdersHistory from "@/components/OrdersHistory";
 
 export default {
   name: "Home",
-  components: {OrdersHistory, OrderForm, Quotes, Pairs}
+  components: {OrdersHistory, OrderForm, Quotes, Pairs},
+  mounted() {
+    // this.goLive()
+  },
+  methods: {
+    goLive() {
+      let socket = new WebSocket(process.env.VUE_APP_WSS_URL);
+
+      socket.onopen = function() {
+        console.log("Соединение установлено.");
+
+        socket.send(`{"op": "subscribe", "args": "instrument"}`);
+      };
+
+      socket.onclose = function(event) {
+        if (event.wasClean) {
+          console.log('Соединение закрыто чисто');
+        } else {
+          console.log('Обрыв соединения'); // например, "убит" процесс сервера
+        }
+        console.log('Код: ' + event.code + ' причина: ' + event.reason);
+      };
+
+      socket.onmessage = function(event) {
+        console.log("Получены данные " + JSON.parse(event.data));
+      };
+
+      socket.onerror = function(error) {
+        console.log("Ошибка " + error.message);
+      };
+    }
+  }
 };
 </script>
 

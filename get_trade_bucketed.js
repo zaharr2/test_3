@@ -1,4 +1,4 @@
-var request = require('request');
+var request = require('request-promise');
 var crypto = require('crypto');
 var verb = 'GET';
 var path = '/api/v1/trade/bucketed?binSize=1m&partial=false&count=100&reverse=true&symbol=XBTUSD';
@@ -19,18 +19,13 @@ var headers = {
 const requestOptions = {
   headers: headers,
   url: process.env.API_URL + path,
-  method: 'GET'
+  method: 'GET',
+  json: true
 };
 
 exports.list = function(req, res) {
-  request(requestOptions, (error, response, body) => {
-    if (error) {
-      res.json({
-        error: error
-      });
-    }
-
-    let parserBody = JSON.parse(body).map(el => {
+  request(requestOptions).then(response => {
+    res.json(response.map(el => {
       return {
         timestamp: el.timestamp,
         open: el.open,
@@ -39,8 +34,10 @@ exports.list = function(req, res) {
         close: el.close,
         grossValue: el.grossValue // TODO: не существующий параметр
       }
+    }));
+  }).catch(error => {
+    res.json({
+      error: error
     });
-
-    res.json(parserBody);
-  });
+  })
 };
