@@ -38,25 +38,36 @@ export default {
       }
     },
     sendForm(side) {
-      let path = process.env.VUE_APP_API_URL + "/order";
-      let data = {
+      let crypto = require('crypto');
+      let path = '/api/v1/order';
+      let verb = 'POST';
+      let expires = Math.round(new Date().getTime() / 1000) + 60;
+      let body = {
         ordType: "Market",
         symbol: this.selected.pairSymbol,
         orderQty: this.orderQty,
         side: side
       };
-      let options = {
-        method: "POST",
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(data)
+      let postBody = JSON.stringify(body);
+      let signature = crypto.createHmac('sha256', process.env.VUE_APP_API_SECRET).update(verb + path + expires.toFixed() + postBody).digest('hex');
+      let headers = {
+        'content-type': 'application/json',
+        'Accept': 'application/json',
+        'X-Requested-With': 'XMLHttpRequest',
+        'api-expires': expires,
+        'api-key': process.env.VUE_APP_API_KEY,
+        'api-signature': signature
+      };
+      let requestOptions = {
+        headers: headers,
+        url: process.env.API_URL + path,
+        method: verb
       };
 
-      fetch(path, options)
+      fetch(process.env.VUE_APP_API_URL + path, requestOptions)
         .then(response => response.json())
         .then(data => {
-          this.$emit("sendForm", data)
+          if (!data.error) this.$emit("sendForm", data)
         })
         .catch(error => {
           console.log("sendForm error:", error);

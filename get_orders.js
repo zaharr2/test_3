@@ -4,7 +4,7 @@ let verb = 'GET';
 let path = '/api/v1/order?count=100&reverse=true';
 
 exports.list = function(req, res) {
-  let expires = Math.round(new Date().getTime() / 1000) + 60; // 1 min in the future
+  let expires = Math.round(new Date().getTime() / 1000) + 60;
   let signature = crypto.createHmac('sha256', process.env.API_SECRET).update(verb + path + expires.toFixed()).digest('hex');
   let headers = {
     'content-type': 'application/json',

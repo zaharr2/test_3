@@ -13,11 +13,8 @@
 </template>
 
 <script>
-import Pair from "@/components/pairs/Pair";
-
 export default {
   name: "Pairs",
-  components: {Pair},
   props: {
     value: {
       type: Object,
@@ -38,12 +35,27 @@ export default {
   },
   methods: {
     getPairs() {
-      let path = process.env.VUE_APP_API_URL + "/instrument/active";
-      fetch(path, { method: "GET" })
+      // const crypto = require('crypto');
+      // let verb = 'GET';
+      let path = process.env.VUE_APP_API_URL + '/api/v1/instrument/active';
+      // let expires = Math.round(new Date().getTime() / 1000) + 60;
+      // let signature = crypto.createHmac('sha256', process.env.VUE_APP_API_SECRET).update(verb + path + expires.toFixed()).digest('hex');
+      // let headers = {
+      //   'content-type': 'application/json',
+      //   'Accept': 'application/json',
+      //   'X-Requested-With': 'XMLHttpRequest',
+      //   'api-expires': expires,
+      //   'api-key': process.env.VUE_APP_API_KEY,
+      //   'api-signature': signature
+      // };
+
+      fetch(path)
         .then(response => response.json())
         .then(data => {
-          this.pairs = data;
-          this.$emit("subscribe")
+          if (!data.error) {
+            this.pairs = data;
+            this.$emit("subscribe")
+          }
         })
         .catch(error => {
           console.log("getPairs error:", error);

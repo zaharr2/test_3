@@ -47,8 +47,26 @@ export default {
       })
     },
     getOrdersHistory() {
-      let path = process.env.VUE_APP_API_URL + "/orders";
-      fetch(path, { method: "GET" })
+      const crypto = require('crypto');
+      let path = '/api/v1/order?count=100&reverse=true';
+      let verb = 'GET';
+      let expires = Math.round(new Date().getTime() / 1000) + 60;
+      let signature = crypto.createHmac('sha256', process.env.VUE_APP_API_SECRET).update(verb + path + expires.toFixed()).digest('hex');
+      let headers = {
+        'content-type': 'application/json',
+        'Accept': 'application/json',
+        'X-Requested-With': 'XMLHttpRequest',
+        'api-expires': expires,
+        'api-key': process.env.VUE_APP_API_KEY,
+        'api-signature': signature
+      };
+      let requestOptions = {
+        headers: headers,
+        url: process.env.API_URL + path,
+        method: verb
+      };
+
+      fetch(process.env.VUE_APP_API_URL + path, requestOptions)
         .then(response => response.json())
         .then(data => {
           this.orders = data;
@@ -58,7 +76,7 @@ export default {
         })
     },
     updateData(order) {
-      let {orderID, symbol, orderQty, timestamp, side, price, ordStatus} = { ...JSON.parse(order) };
+      let {orderID, symbol, orderQty, timestamp, side, price, ordStatus} = { ...order };
       this.orders.unshift({orderID, symbol, orderQty, timestamp, side, price, ordStatus});
     }
   }

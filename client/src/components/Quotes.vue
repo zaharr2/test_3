@@ -42,12 +42,14 @@ export default {
       })
     },
     getQuotes(symbol) {
-      let path = process.env.VUE_APP_API_URL + "/trade/bucketed?symbol=" + symbol;
-      fetch(path, { method: "GET" })
+      let path = process.env.VUE_APP_API_URL + "/api/v1/trade/bucketed?binSize=1m&partial=false&count=100&reverse=true&symbol=" + symbol;
+      fetch(path)
         .then(response => response.json())
         .then(data => {
-          this.quotes = data;
-          this.$emit("subscribe");
+          if (!data.error) {
+            this.quotes = data;
+            this.$emit("subscribe");
+          }
         })
         .catch(error => {
           console.log("getQuotes error:", error);
