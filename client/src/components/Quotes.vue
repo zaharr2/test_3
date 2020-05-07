@@ -1,5 +1,5 @@
 <template lang="pug">
-  .items
+  .items.items_quotes
     .item.border-bottom
       span
         strong timestamp
@@ -13,13 +13,14 @@
         strong close
       span
         strong grossValue
-    .item(v-for="(quote, index) in quotes" :key="'quote-' + index")
-      span {{ formatDate(quote.timestamp) }}
-      span {{ quote.open }}
-      span {{ quote.high }}
-      span {{ quote.low }}
-      span {{ quote.close }}
-      span {{ quote.grossValue }}
+    transition-group(name="fade" mode="out-in" tag="div")
+      .item(v-for="quote in quotes" :key="quote.timestamp")
+        span {{ formatDate(quote.timestamp) }}
+        span {{ quote.open }}
+        span {{ quote.high }}
+        span {{ quote.low }}
+        span {{ quote.close }}
+        span {{ quote.grossValue }}
 </template>
 
 <script>

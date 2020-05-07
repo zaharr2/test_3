@@ -6,7 +6,7 @@
   input {
     display: block;
     padding: 5px 10px;
-    width: calc(25vw - 42px);
+    width: 100%;
     font-size: 30px;
   }
 
@@ -18,5 +18,10 @@
     &:last-of-type {
       float: right;
     }
+  }
+
+  input:disabled,
+  button:disabled {
+    cursor: not-allowed;
   }
 }

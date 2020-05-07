@@ -1,10 +1,7 @@
 let request = require('request-promise');
 let crypto = require('crypto');
 let verb = 'GET';
-let path = '/order';
-// let data = '';
-// let postBody = JSON.stringify(data);
-// let signature = crypto.createHmac('sha256', apiSecret).update(verb + path + expires.toFixed() + postBody).digest('hex');
+let path = '/api/v1/order?reverse=true';
 
 exports.list = function(req, res) {
   let expires = Math.round(new Date().getTime() / 1000) + 60; // 1 min in the future
@@ -38,7 +35,7 @@ exports.list = function(req, res) {
       }
     }));
   }).catch(error => {
-    console.log("error", error)
+    console.log("error", error);
     res.json({
       error: error
     });

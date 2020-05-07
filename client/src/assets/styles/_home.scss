@@ -6,7 +6,6 @@
   &__qotes,
   &__order-form,
   &__orders-history {
-    padding: 5px;
     overflow-y: auto;
   }
 
@@ -48,8 +47,15 @@
 }
 
 .item {
+  padding: 0 5px;
   display: flex;
   width: 100%;
+
+  &_order {
+    span:first-of-type {
+      flex: 2;
+    }
+  }
 
   span {
     flex: 1;

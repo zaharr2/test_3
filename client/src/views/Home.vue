@@ -5,9 +5,9 @@
     .home__qotes
       Quotes(:quotes="quotes" @subscribe="subscriber('subscribe', `tradeBin1m:${selected.pairSymbol}`)" ref="quotes")
     .home__order-form
-      OrderForm(:selected="selected")
+      OrderForm(:selected="selected" @sendForm="pushToOrdersHistory")
     .home__orders-history
-      OrdersHistory
+      OrdersHistory(ref="ordersHistory")
 </template>
 
 <script>
@@ -105,6 +105,9 @@ export default {
     },
     subscriber(op, args) {
       if (this.webSocket) this.webSocket.send(`{"op": "${op}", "args": "${args}"}`);
+    },
+    pushToOrdersHistory(order) {
+      this.$refs.ordersHistory.updateData(order)
     }
   }
 };

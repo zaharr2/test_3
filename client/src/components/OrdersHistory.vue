@@ -1,24 +1,66 @@
 <template lang="pug">
-  h1 Order history
+  .items.items_orders
+    .item.item_order.border-bottom
+      span
+        strong orderID
+      span
+        strong symbol
+      span
+        strong orderQty
+      span
+        strong timestamp
+      span
+        strong side
+      span
+        strong price
+      span
+        strong ordStatus
+    .item.item_order(v-for="order in orders" :key="order.timestamp")
+      span {{ order.orderID }}
+      span {{ order.symbol }}
+      span {{ order.orderQty }}
+      span {{ formatDate(order.timestamp) }}
+      span {{ order.side }}
+      span {{ order.price }}
+      span {{ order.ordStatus }}
 </template>
 
 <script>
-  export default {
-    name: "OrdersHistory",
-    mounted() {
-      // this.getOrdersHistory()
+export default {
+  name: "OrdersHistory",
+  data() {
+    return {
+      orders: []
+    }
+  },
+  mounted() {
+    this.getOrdersHistory()
+  },
+  methods: {
+    formatDate(date) {
+      return new Date(date).toLocaleString("ru", {
+        hour: '2-digit',
+        minute: '2-digit',
+        day: '2-digit',
+        month: '2-digit',
+        year: '2-digit'
+      })
     },
-    methods: {
-      getOrdersHistory() {
-        let path = process.env.VUE_APP_API_URL + "/order";
-        fetch(path, { method: "GET" })
-          .then(response => {
-            console.log("getPairs", JSON.parse(response.data));
-          })
-          .catch(error => {
-            console.log("OrdersHistory error:", error);
-          })
-      }
+    getOrdersHistory() {
+      let path = process.env.VUE_APP_API_URL + "/order";
+      fetch(path, { method: "GET" })
+        .then(response => response.json())
+        .then(data => {
+          this.orders = data;
+        })
+        .catch(error => {
+          console.log("OrdersHistory error:", error);
+        })
+    },
+    updateData(order) {
+      let {orderID, symbol, orderQty, timestamp, side, price, ordStatus} = { ...JSON.parse(order) };
+      this.orders.unshift({orderID, symbol, orderQty, timestamp, side, price, ordStatus});
     }
   }
+}
 </script>

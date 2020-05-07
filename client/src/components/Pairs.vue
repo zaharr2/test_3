@@ -1,14 +1,12 @@
 <template lang="pug">
   .items
-    .item.border-bottom
+    .item.item_pair.border-bottom
       span
         strong symbol
       span
         strong lastPrice
-    //Pair(v-for="(pair, index) in pairs" :pair="pair" :key="'pair-' + index")
-    label.item(v-for="(pair, index) in pairs" :class="{ selected: pair.symbol === value.pairSymbol }" :key="'pair-' + index")
+    label.item.item_pair(v-for="(pair, index) in pairs" :class="{ selected: pair.symbol === value.pairSymbol }" :key="'pair-' + index")
       input(type="radio" name="radio" v-model="value.pairSymbol" :value="pair.symbol")
-      //span.checkmark
       span {{ pair.symbol }}
       transition(name="slide-fade" mode="out-in")
         span(:key="pair.lastPrice") {{ pair.lastPrice }}

@@ -1,10 +1,10 @@
 let request = require('request-promise');
 let crypto = require('crypto');
 let verb = 'POST';
-let path = '/order';
+let path = '/api/v1/order';
 
 exports.postData = function(req, res) {
-  console.log(JSON.stringify(req.body))
+  console.log("req.body", JSON.stringify(req.body))
 
   let expires = Math.round(new Date().getTime() / 1000) + 60;
   // let data = {
@@ -18,7 +18,7 @@ exports.postData = function(req, res) {
 // and in the signature. If you don't do this, you might get differently-sorted keys and blow the signature.
   let postBody = JSON.stringify(req.body);
 
-  let signature = crypto.createHmac('sha256', process.env.API_SECRET).update(verb + path + expires + postBody).digest('hex');
+  let signature = crypto.createHmac('sha256', process.env.API_SECRET).update(verb + path + expires.toFixed() + postBody).digest('hex');
 
   let headers = {
     'content-type': 'application/json',
