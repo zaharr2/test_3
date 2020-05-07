@@ -62,7 +62,6 @@ export default {
       };
       let requestOptions = {
         headers: headers,
-        url: process.env.API_URL + path,
         method: verb
       };
 

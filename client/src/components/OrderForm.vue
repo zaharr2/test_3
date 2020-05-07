@@ -60,8 +60,8 @@ export default {
       };
       let requestOptions = {
         headers: headers,
-        url: process.env.API_URL + path,
-        method: verb
+        method: verb,
+        body: postBody
       };
 
       fetch(process.env.VUE_APP_API_URL + path, requestOptions)

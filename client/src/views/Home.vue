@@ -51,7 +51,7 @@ export default {
         if (event.wasClean) {
           console.log('Соединение закрыто чисто');
         } else {
-          console.log('Обрыв соединения'); // например, "убит" процесс сервера
+          console.log('Обрыв соединения');
         }
         console.log('Код: ' + event.code + ' причина: ' + event.reason);
       };
