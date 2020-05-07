@@ -1,9 +1,5 @@
 module.exports = {
   devServer: {
-    proxy: {
-      "/": {
-        target: "https://testnet.bitmex.com"
-      }
-    }
+    proxy: "https://testnet.bitmex.com"
   }
 };
