@@ -34,7 +34,7 @@ exports.list = function(req, res) {
         high: el.high,
         low: el.low,
         close: el.close,
-        grossValue: el.grossValue // TODO: не существующий параметр
+        grossValue: el.grossValue // TODO: не существующий параметр?
       }
     }));
   }).catch(error => {

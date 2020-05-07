@@ -1,7 +1,7 @@
 <template lang="pug">
   .home
     .home__pairs
-      Pairs(v-model="selected" @subscribe="subscribePairs" ref="pairs")
+      Pairs(v-model="selected" @subscribe="subscriber('subscribe', 'instrument')" ref="pairs")
     .home__qotes
       Quotes(:quotes="quotes")
     .home__order-form
@@ -30,8 +30,9 @@ export default {
   },
   watch: {
     "selected.pairSymbol": {
-      handler(selectedPairSymbol) {
-        console.log("selectedPairSymbol", selectedPairSymbol);
+      handler(newSelectedPairSymbol, oldSelectedPairSymbol) {
+        console.log("selectedPairSymbol", newSelectedPairSymbol, oldSelectedPairSymbol);
+        if (oldSelectedPairSymbol) this.subscriber("unsubscribe", `tradeBin1m:${oldSelectedPairSymbol}`);
         this.getQuotes();
       }
     }
@@ -73,8 +74,11 @@ export default {
         case "instrument":
           this.pairsHandler(data);
           break;
+        case "tradeBin1m":
+          this.qoutesHandler(data);
+          break;
         default:
-          console.log(data.table);
+          console.log("table: ", data);
           break;
       }
     },
@@ -84,24 +88,49 @@ export default {
           this.$refs.pairs.updatePairs(data.data)
           break;
         default:
-          console.log("action", data.action);
+          console.log("action: ", data.action);
           break;
       }
     },
-    subscribePairs() {
-      if (this.webSocket) this.webSocket.send(`{"op": "subscribe", "args": "instrument"}`);
+    qoutesHandler(data) {
+      switch(data.action) {
+        case "insert":
+          this.updateQuotes(data.data)
+          break;
+        default:
+          console.log("action: ", data.action);
+          break;
+      }
+    },
+    subscriber(op, args) {
+      if (this.webSocket) this.webSocket.send(`{"op": "${op}", "args": "${args}"}`);
     },
     getQuotes() {
       let path = process.env.VUE_APP_API_URL + "/trade/bucketed?symbol=" + this.selected.pairSymbol;
       fetch(path, { method: "GET" })
         .then(response => response.json())
         .then(data => {
-          console.log("getQuotes", data);
           this.quotes = data
+          this.subscriber("subscribe", `tradeBin1m:${this.selected.pairSymbol}`)
         })
         .catch(error => {
           console.log("getQuotes error:", error);
         })
+    },
+    updateQuotes(data) {
+      data.map(el => {
+        return {
+          timestamp: el.timestamp,
+          open: el.open,
+          high: el.high,
+          low: el.low,
+          close: el.close,
+          grossValue: el.grossValue // TODO: не существующий параметр?
+        }
+      }).forEach(el => {
+        this.quotes.pop();
+        this.quotes.unshift(el);
+      })
     }
   }
 };
