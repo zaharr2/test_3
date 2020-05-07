@@ -1,10 +1,39 @@
 <template lang="pug">
-  h1 Pairs
+  .items
+    .item.border-bottom
+      span
+        strong symbol
+      span
+        strong lastPrice
+    //Pair(v-for="(pair, index) in pairs" :pair="pair" :key="'pair-' + index")
+    label.item(v-for="(pair, index) in pairs" :class="{ selected: pair.symbol === value.pairSymbol }" :key="'pair-' + index")
+      input(type="radio" name="radio" v-model="value.pairSymbol" :value="pair.symbol")
+      //span.checkmark
+      span {{ pair.symbol }}
+      span {{ pair.lastPrice }}
 </template>
 
 <script>
+import Pair from "@/components/pairs/Pair";
+
 export default {
   name: "Pairs",
+  components: {Pair},
+  props: {
+    value: {
+      type: Object,
+      default: () => {
+        return {
+          pairSymbol: ""
+        }
+      }
+    }
+  },
+  data() {
+    return {
+      pairs: []
+    }
+  },
   mounted() {
     this.getPairs()
   },
@@ -14,16 +43,45 @@ export default {
       fetch(path, { method: "GET" })
         .then(response => response.json())
         .then(data => {
-          console.log("getPairs", data);
+          this.pairs = data;
+          this.$emit("subscribe")
         })
         .catch(error => {
           console.log("getPairs error:", error);
         })
+    },
+    updatePairs(data) {
+      for (let i = 0; i < data.length; i++) {
+        if (Object.prototype.hasOwnProperty.call(data[i], "lastPrice")) {
+          for (let j = 0; j < this.pairs.length; j++) {
+            if (this.pairs[j].symbol === data[i].symbol) {
+              this.pairs[j].lastPrice = data[i].lastPrice
+            }
+          }
+        }
+      }
     }
   }
 }
 </script>
 
 <style scoped lang="scss">
+.item {
+  &:hover {
+    cursor: pointer;
+    background-color: aqua;
+  }
 
+  &.selected {
+    background-color: aqua;
+  }
+
+  input {
+    position: absolute;
+    opacity: 0;
+    cursor: pointer;
+    height: 0;
+    width: 0;
+  }
+}
 </style>

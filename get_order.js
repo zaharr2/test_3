@@ -1,29 +1,30 @@
-var request = require('request-promise');
-var crypto = require('crypto');
-var verb = 'GET';
-var path = '/order';
-var expires = Math.round(new Date().getTime() / 1000) + 60; // 1 min in the future
-// var data = '';
-// var postBody = JSON.stringify(data);
-// var signature = crypto.createHmac('sha256', apiSecret).update(verb + path + expires.toFixed() + postBody).digest('hex');
-var signature = crypto.createHmac('sha256', process.env.API_SECRET).update(verb + path + expires.toFixed()).digest('hex');
-var headers = {
-  'content-type': 'application/json',
-  'Accept': 'application/json',
-  'X-Requested-With': 'XMLHttpRequest',
-  'api-expires': expires,
-  'api-key': process.env.API_KEY,
-  'api-signature': signature
-};
-
-const requestOptions = {
-  headers: headers,
-  url: process.env.API_URL + path,
-  method: 'GET',
-  json: true
-};
+let request = require('request-promise');
+let crypto = require('crypto');
+let verb = 'GET';
+let path = '/order';
+// let data = '';
+// let postBody = JSON.stringify(data);
+// let signature = crypto.createHmac('sha256', apiSecret).update(verb + path + expires.toFixed() + postBody).digest('hex');
 
 exports.list = function(req, res) {
+  let expires = Math.round(new Date().getTime() / 1000) + 60; // 1 min in the future
+  let signature = crypto.createHmac('sha256', process.env.API_SECRET).update(verb + path + expires.toFixed()).digest('hex');
+  let headers = {
+    'content-type': 'application/json',
+    'Accept': 'application/json',
+    'X-Requested-With': 'XMLHttpRequest',
+    'api-expires': expires,
+    'api-key': process.env.API_KEY,
+    'api-signature': signature
+  };
+
+  const requestOptions = {
+    headers: headers,
+    url: process.env.API_URL + path,
+    method: 'GET',
+    json: true
+  };
+
   request(requestOptions).then(response => {
     res.json(response.map(el => {
       return {

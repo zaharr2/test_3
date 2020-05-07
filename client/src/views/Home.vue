@@ -1,11 +1,11 @@
 <template lang="pug">
   .home
     .home__pairs
-      Pairs
+      Pairs(v-model="selected" @subscribe="subscribePairs" ref="pairs")
     .home__qotes
-      Quotes
+      Quotes(:quotes="quotes")
     .home__order-form
-      OrderForm
+      OrderForm(:selected="selected")
     .home__orders-history
       OrdersHistory
 </template>
@@ -19,20 +19,37 @@ import OrdersHistory from "@/components/OrdersHistory";
 export default {
   name: "Home",
   components: {OrdersHistory, OrderForm, Quotes, Pairs},
+  data() {
+    return {
+      selected: {
+        pairSymbol: ""
+      },
+      quotes: [],
+      webSocket: undefined
+    }
+  },
+  watch: {
+    "selected.pairSymbol": {
+      handler(selectedPairSymbol) {
+        console.log("selectedPairSymbol", selectedPairSymbol);
+        this.getQuotes();
+      }
+    }
+  },
   mounted() {
-    // this.goLive()
+    this.goLive()
   },
   methods: {
     goLive() {
-      let socket = new WebSocket(process.env.VUE_APP_WSS_URL);
+      this.webSocket = new WebSocket(process.env.VUE_APP_WSS_URL);
 
-      socket.onopen = function() {
+      this.webSocket.onopen = () => {
         console.log("Соединение установлено.");
 
-        socket.send(`{"op": "subscribe", "args": "instrument"}`);
+        // socket.send(`{"op": "subscribe", "args": "instrument"}`);
       };
 
-      socket.onclose = function(event) {
+      this.webSocket.onclose = event => {
         if (event.wasClean) {
           console.log('Соединение закрыто чисто');
         } else {
@@ -41,13 +58,50 @@ export default {
         console.log('Код: ' + event.code + ' причина: ' + event.reason);
       };
 
-      socket.onmessage = function(event) {
-        console.log("Получены данные " + JSON.parse(event.data));
+      this.webSocket.onmessage = event => {
+        // console.log("Получены данные ", JSON.parse(event.data));
+
+        this.dataHandler(JSON.parse(event.data))
       };
 
-      socket.onerror = function(error) {
+      this.webSocket.onerror = error => {
         console.log("Ошибка " + error.message);
       };
+    },
+    dataHandler(data) {
+      switch(data.table) {
+        case "instrument":
+          this.pairsHandler(data);
+          break;
+        default:
+          console.log(data.table);
+          break;
+      }
+    },
+    pairsHandler(data) {
+      switch(data.action) {
+        case "update":
+          this.$refs.pairs.updatePairs(data.data)
+          break;
+        default:
+          console.log("action", data.action);
+          break;
+      }
+    },
+    subscribePairs() {
+      if (this.webSocket) this.webSocket.send(`{"op": "subscribe", "args": "instrument"}`);
+    },
+    getQuotes() {
+      let path = process.env.VUE_APP_API_URL + "/trade/bucketed?symbol=" + this.selected.pairSymbol;
+      fetch(path, { method: "GET" })
+        .then(response => response.json())
+        .then(data => {
+          console.log("getQuotes", data);
+          this.quotes = data
+        })
+        .catch(error => {
+          console.log("getQuotes error:", error);
+        })
     }
   }
 };
@@ -70,11 +124,13 @@ export default {
   }
 
   &__pairs {
+    overflow-y: auto;
     background: antiquewhite;
   }
 
   &__qotes {
     width: 50%;
+    overflow-y: auto;
     background: aqua;
   }
 
@@ -87,6 +143,20 @@ export default {
     height: 70vh;
     background: burlywood;
     order: 2;
+  }
+}
+
+.border-bottom {
+  border-bottom: 2px solid black;
+}
+
+.item {
+  display: flex;
+  width: 100%;
+
+  span {
+    flex: 1;
+    padding: 2px;
   }
 }
 </style>
