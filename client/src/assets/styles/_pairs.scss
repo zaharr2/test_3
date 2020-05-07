@@ -1,0 +1,35 @@
+.slide-fade-enter-active {
+  transition: all .8s cubic-bezier(0, 0.7, 0.9, 1.0);
+}
+
+.slide-fade-leave-active {
+  /*transition: all .3s linear;*/
+  /*transition: all .3s cubic-bezier(0, 0.9, 0.1, 1.0);*/
+}
+
+.slide-fade-enter {
+  /*transform: translateX(20px);*/
+  background-color: deeppink;
+  opacity: 0;
+}
+
+.item {
+  overflow: hidden;
+
+  &:hover {
+    cursor: pointer;
+    background-color: aqua;
+  }
+
+  &.selected {
+    background-color: aqua;
+  }
+
+  input {
+    position: absolute;
+    opacity: 0;
+    cursor: pointer;
+    height: 0;
+    width: 0;
+  }
+}

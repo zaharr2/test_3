@@ -10,7 +10,8 @@
       input(type="radio" name="radio" v-model="value.pairSymbol" :value="pair.symbol")
       //span.checkmark
       span {{ pair.symbol }}
-      span {{ pair.lastPrice }}
+      transition(name="slide-fade" mode="out-in")
+        span(:key="pair.lastPrice") {{ pair.lastPrice }}
 </template>
 
 <script>
@@ -50,7 +51,7 @@ export default {
           console.log("getPairs error:", error);
         })
     },
-    updatePairs(data) {
+    updateData(data) {
       for (let i = 0; i < data.length; i++) {
         if (Object.prototype.hasOwnProperty.call(data[i], "lastPrice")) {
           for (let j = 0; j < this.pairs.length; j++) {
@@ -64,24 +65,3 @@ export default {
   }
 }
 </script>
-
-<style scoped lang="scss">
-.item {
-  &:hover {
-    cursor: pointer;
-    background-color: aqua;
-  }
-
-  &.selected {
-    background-color: aqua;
-  }
-
-  input {
-    position: absolute;
-    opacity: 0;
-    cursor: pointer;
-    height: 0;
-    width: 0;
-  }
-}
-</style>

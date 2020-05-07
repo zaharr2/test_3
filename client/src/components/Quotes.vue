@@ -25,10 +25,9 @@
 <script>
 export default {
   name: "Quotes",
-  props: {
-    quotes: {
-      type: Array,
-      default: () => []
+  data() {
+    return {
+      quotes: []
     }
   },
   methods: {
@@ -40,11 +39,34 @@ export default {
         month: '2-digit',
         year: '2-digit'
       })
+    },
+    getQuotes(symbol) {
+      let path = process.env.VUE_APP_API_URL + "/trade/bucketed?symbol=" + symbol;
+      fetch(path, { method: "GET" })
+        .then(response => response.json())
+        .then(data => {
+          this.quotes = data;
+          this.$emit("subscribe");
+        })
+        .catch(error => {
+          console.log("getQuotes error:", error);
+        })
+    },
+    updateData(data) {
+      data.map(el => {
+        return {
+          timestamp: el.timestamp,
+          open: el.open,
+          high: el.high,
+          low: el.low,
+          close: el.close,
+          grossValue: el.grossValue // TODO: не существующий параметр?
+        }
+      }).forEach(el => {
+        this.quotes.pop();
+        this.quotes.unshift(el);
+      })
     }
   }
 }
 </script>
-
-<style scoped lang="scss">
-
-</style>

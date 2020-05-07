@@ -1,0 +1,58 @@
+.home {
+  display: flex;
+  flex-flow: row wrap;
+
+  &__pairs,
+  &__qotes,
+  &__order-form,
+  &__orders-history {
+    padding: 5px;
+    overflow-y: auto;
+  }
+
+  &__pairs,
+  &__qotes,
+  &__order-form {
+    order: 1;
+    height: 70vh;
+  }
+
+  &__pairs,
+  &__order-form {
+    width: 25%;
+  }
+
+  &__pairs {
+    background: antiquewhite;
+  }
+
+  &__qotes {
+    width: 50%;
+    background: aqua;
+  }
+
+  &__order-form {
+    background: bisque;
+  }
+
+  &__orders-history {
+    width: 100%;
+    height: 30vh;
+    background: burlywood;
+    order: 2;
+  }
+}
+
+.border-bottom {
+  border-bottom: 2px solid black;
+}
+
+.item {
+  display: flex;
+  width: 100%;
+
+  span {
+    flex: 1;
+    padding: 2px;
+  }
+}

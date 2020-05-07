@@ -3,7 +3,7 @@
     .home__pairs
       Pairs(v-model="selected" @subscribe="subscriber('subscribe', 'instrument')" ref="pairs")
     .home__qotes
-      Quotes(:quotes="quotes")
+      Quotes(:quotes="quotes" @subscribe="subscriber('subscribe', `tradeBin1m:${selected.pairSymbol}`)" ref="quotes")
     .home__order-form
       OrderForm(:selected="selected")
     .home__orders-history
@@ -33,7 +33,7 @@ export default {
       handler(newSelectedPairSymbol, oldSelectedPairSymbol) {
         console.log("selectedPairSymbol", newSelectedPairSymbol, oldSelectedPairSymbol);
         if (oldSelectedPairSymbol) this.subscriber("unsubscribe", `tradeBin1m:${oldSelectedPairSymbol}`);
-        this.getQuotes();
+        this.$refs.quotes.getQuotes(newSelectedPairSymbol);
       }
     }
   },
@@ -85,7 +85,7 @@ export default {
     pairsHandler(data) {
       switch(data.action) {
         case "update":
-          this.$refs.pairs.updatePairs(data.data)
+          this.$refs.pairs.updateData(data.data)
           break;
         default:
           console.log("action: ", data.action);
@@ -95,7 +95,8 @@ export default {
     qoutesHandler(data) {
       switch(data.action) {
         case "insert":
-          this.updateQuotes(data.data)
+          this.$refs.quotes.updateData(data.data)
+          // this.updateQuotes(data.data)
           break;
         default:
           console.log("action: ", data.action);
@@ -104,88 +105,7 @@ export default {
     },
     subscriber(op, args) {
       if (this.webSocket) this.webSocket.send(`{"op": "${op}", "args": "${args}"}`);
-    },
-    getQuotes() {
-      let path = process.env.VUE_APP_API_URL + "/trade/bucketed?symbol=" + this.selected.pairSymbol;
-      fetch(path, { method: "GET" })
-        .then(response => response.json())
-        .then(data => {
-          this.quotes = data
-          this.subscriber("subscribe", `tradeBin1m:${this.selected.pairSymbol}`)
-        })
-        .catch(error => {
-          console.log("getQuotes error:", error);
-        })
-    },
-    updateQuotes(data) {
-      data.map(el => {
-        return {
-          timestamp: el.timestamp,
-          open: el.open,
-          high: el.high,
-          low: el.low,
-          close: el.close,
-          grossValue: el.grossValue // TODO: не существующий параметр?
-        }
-      }).forEach(el => {
-        this.quotes.pop();
-        this.quotes.unshift(el);
-      })
     }
   }
 };
 </script>
-
-<style lang="scss">
-.home {
-  display: flex;
-  flex-flow: row wrap;
-  &__pairs,
-  &__qotes,
-  &__order-form {
-    order: 1;
-    height: 70vh;
-  }
-
-  &__pairs,
-  &__order-form {
-    width: 25%;
-  }
-
-  &__pairs {
-    overflow-y: auto;
-    background: antiquewhite;
-  }
-
-  &__qotes {
-    width: 50%;
-    overflow-y: auto;
-    background: aqua;
-  }
-
-  &__order-form {
-    background: bisque;
-  }
-
-  &__orders-history {
-    width: 100%;
-    height: 70vh;
-    background: burlywood;
-    order: 2;
-  }
-}
-
-.border-bottom {
-  border-bottom: 2px solid black;
-}
-
-.item {
-  display: flex;
-  width: 100%;
-
-  span {
-    flex: 1;
-    padding: 2px;
-  }
-}
-</style>

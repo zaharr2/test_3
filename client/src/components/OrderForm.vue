@@ -61,28 +61,3 @@
     }
   }
 </script>
-
-<style scoped lang="scss">
-.form {
-  width: 100%;
-  padding: 5px;
-  box-sizing: border-box;
-
-  input {
-    display: block;
-    padding: 5px 10px;
-    width: calc(25vw - 42px);
-    font-size: 30px;
-  }
-
-  button {
-    font-size: 30px;
-    padding: 10px 40px;
-
-
-    &:last-of-type {
-      float: right;
-    }
-  }
-}
-</style>
