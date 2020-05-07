@@ -1,8 +1,6 @@
 require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
-// const bodyParser = require('body-parser');
-const morgan = require('morgan');
 
 const app = express();
 
@@ -12,22 +10,14 @@ app.use(express.json());
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-let request = require('request');
-let crypto = require('crypto');
-
-let apiKey = process.env.API_KEY;
-let apiSecret = process.env.API_SECRET;
-let apiUrl = process.env.API_URL;
-
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
 let getOrder = require('./get_order');
 let postOrder = require('./post_order');
 let getTradeBucketed = require('./get_trade_bucketed');
 let getInstrumentActive = require('./get_instrument_active');
 
-
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//##########################################################################   ROUTES
+//
+//##########################################################################   GET /
 
 app.get('/', (req, res) => {
   res.json({
@@ -35,8 +25,6 @@ app.get('/', (req, res) => {
   })
 });
 
-//##########################################################################   ROUTES
-//
 //##########################################################################   GET /instrument/active
 
 app.get('/instrument/active', getInstrumentActive.list);
@@ -59,7 +47,3 @@ const port = process.env.PORT || 4000;
 app.listen(port, () => {
   console.log(`listening on ${port}`);
 });
-
-
-
-

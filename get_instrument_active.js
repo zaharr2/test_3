@@ -3,12 +3,6 @@ let crypto = require('crypto');
 let verb = 'GET';
 let path = '/api/v1/instrument/active';
 
-// let data = {
-//   symbol: 'XBTUSD',
-//   lastPrice: 590
-// };
-// let postBody = JSON.stringify(data);
-
 exports.list = function(req, res) {
   let expires = Math.round(new Date().getTime() / 1000) + 60;
   let signature = crypto.createHmac('sha256', process.env.API_SECRET).update(verb + path + expires.toFixed()).digest('hex');

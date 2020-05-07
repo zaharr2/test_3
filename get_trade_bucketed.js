@@ -2,10 +2,6 @@ let request = require('request-promise');
 let crypto = require('crypto');
 let verb = 'GET';
 
-// let data = '';
-// let postBody = JSON.stringify(data);
-// let signature = crypto.createHmac('sha256', apiSecret).update(verb + path + expires.toFixed() + postBody).digest('hex');
-
 exports.list = function(req, res) {
   let path = '/api/v1/trade/bucketed?binSize=1m&partial=false&count=100&reverse=true&symbol=' + req.query.symbol;
   let expires = Math.round(new Date().getTime() / 1000) + 60;
