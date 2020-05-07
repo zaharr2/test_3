@@ -47,7 +47,7 @@ export default {
       })
     },
     getOrdersHistory() {
-      let path = process.env.VUE_APP_API_URL + "/order";
+      let path = process.env.VUE_APP_API_URL + "/orders";
       fetch(path, { method: "GET" })
         .then(response => response.json())
         .then(data => {

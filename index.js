@@ -11,7 +11,7 @@ app.use(express.json());
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-let getOrder = require('./get_order');
+let getOrders = require('./get_orders');
 let postOrder = require('./post_order');
 let getTradeBucketed = require('./get_trade_bucketed');
 let getInstrumentActive = require('./get_instrument_active');
@@ -36,7 +36,7 @@ app.get('/trade/bucketed', getTradeBucketed.list);
 
 //##########################################################################   GET /order
 
-app.get('/order', getOrder.list);
+app.get('/orders', getOrders.list);
 
 //##########################################################################   POST /order
 

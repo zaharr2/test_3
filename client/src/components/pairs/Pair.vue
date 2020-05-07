@@ -1,6 +1,6 @@
 <template lang="pug">
   label.pair.container(:class="{ selected: checked }")
-    input(type="radio" name="radio" v-model="checked" @change="selectPair")
+    input(type="radio" name="radio" v-model="checked")
     span.checkmark
     .symbol {{ pair.symbol }}
     .lastPrice {{ pair.lastPrice }}
@@ -24,15 +24,6 @@ export default {
           lastPrice: 0
         }
       }
-    }
-  },
-  methods: {
-    selectPair(e) {
-      this.checked = true;
-      console.log("e: ", e)
-    },
-    unselectPair() {
-      this.checked = false
     }
   }
 }

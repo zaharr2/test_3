@@ -31,7 +31,6 @@ export default {
   watch: {
     "selected.pairSymbol": {
       handler(newSelectedPairSymbol, oldSelectedPairSymbol) {
-        console.log("selectedPairSymbol", newSelectedPairSymbol, oldSelectedPairSymbol);
         if (oldSelectedPairSymbol) this.subscriber("unsubscribe", `tradeBin1m:${oldSelectedPairSymbol}`);
         this.$refs.quotes.getQuotes(newSelectedPairSymbol);
       }
@@ -46,8 +45,6 @@ export default {
 
       this.webSocket.onopen = () => {
         console.log("Соединение установлено.");
-
-        // socket.send(`{"op": "subscribe", "args": "instrument"}`);
       };
 
       this.webSocket.onclose = event => {
@@ -60,8 +57,6 @@ export default {
       };
 
       this.webSocket.onmessage = event => {
-        // console.log("Получены данные ", JSON.parse(event.data));
-
         this.dataHandler(JSON.parse(event.data))
       };
 
@@ -95,8 +90,7 @@ export default {
     qoutesHandler(data) {
       switch(data.action) {
         case "insert":
-          this.$refs.quotes.updateData(data.data)
-          // this.updateQuotes(data.data)
+          this.$refs.quotes.updateData(data.data);
           break;
         default:
           console.log("action: ", data.action);
