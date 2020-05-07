@@ -43,6 +43,7 @@ export default {
     },
     getQuotes(symbol) {
       let path = process.env.VUE_APP_API_URL + "/api/v1/trade/bucketed?binSize=1m&partial=false&count=100&reverse=true&symbol=" + symbol;
+
       fetch(path)
         .then(response => response.json())
         .then(data => {

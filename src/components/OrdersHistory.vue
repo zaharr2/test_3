@@ -26,6 +26,8 @@
 </template>
 
 <script>
+import crypto from "crypto";
+
 export default {
   name: "OrdersHistory",
   data() {
@@ -47,7 +49,6 @@ export default {
       })
     },
     getOrdersHistory() {
-      const crypto = require('crypto');
       let path = '/api/v1/order?count=100&reverse=true';
       let verb = 'GET';
       let expires = Math.round(new Date().getTime() / 1000) + 60;

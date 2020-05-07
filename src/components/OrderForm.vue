@@ -9,6 +9,8 @@
 </template>
 
 <script>
+import crypto from "crypto";
+
 export default {
   name: "OrderForm",
   props: {
@@ -38,7 +40,6 @@ export default {
       }
     },
     sendForm(side) {
-      let crypto = require('crypto');
       let path = '/api/v1/order';
       let verb = 'POST';
       let expires = Math.round(new Date().getTime() / 1000) + 60;
