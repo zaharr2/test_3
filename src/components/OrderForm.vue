@@ -4,8 +4,8 @@
       span(v-if="selected.pairSymbol.length")  for {{ selected.pairSymbol }}
     input(type="number" v-model="orderQty" min="1" @keypress="isNumber" :disabled="isDisabled")
     br
-    button(@click="sendForm('Buy')" :disabled="isDisabled") Купить
-    button(@click="sendForm('Sell')" :disabled="isDisabled") Продать
+    button(@click="sendForm('Buy')" :disabled="isDisabled") Buy
+    button(@click="sendForm('Sell')" :disabled="isDisabled") Sell
 </template>
 
 <script>
