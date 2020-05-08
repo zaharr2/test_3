@@ -10,6 +10,7 @@
 
 <script>
 import crypto from "crypto";
+import EventBus from "@/event-bus";
 
 export default {
   name: "OrderForm",
@@ -68,7 +69,8 @@ export default {
       fetch(process.env.VUE_APP_API_URL + path, requestOptions)
         .then(response => response.json())
         .then(data => {
-          if (!data.error) this.$emit("sendForm", data)
+          // if (!data.error) this.$emit("sendForm", data)
+          if (!data.error) EventBus.$emit("orderCreated", data)
         })
         .catch(error => {
           console.log("sendForm error:", error);

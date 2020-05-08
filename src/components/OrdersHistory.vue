@@ -27,6 +27,7 @@
 
 <script>
 import crypto from "crypto";
+import EventBus from "@/event-bus";
 
 export default {
   name: "OrdersHistory",
@@ -69,7 +70,11 @@ export default {
       fetch(process.env.VUE_APP_API_URL + path, requestOptions)
         .then(response => response.json())
         .then(data => {
-          this.orders = data;
+          this.orders = data.map(el => {
+            let {orderID, symbol, orderQty, timestamp, side, price, ordStatus} = { ...el };
+            return {orderID, symbol, orderQty, timestamp, side, price, ordStatus}
+          });
+          EventBus.$on("orderCreated", payload => this.updateData(payload))
         })
         .catch(error => {
           console.log("OrdersHistory error:", error);
@@ -77,7 +82,7 @@ export default {
     },
     updateData(order) {
       let {orderID, symbol, orderQty, timestamp, side, price, ordStatus} = { ...order };
-      this.orders.unshift({orderID, symbol, orderQty, timestamp, side, price, ordStatus});
+      if (this.orders.unshift({orderID, symbol, orderQty, timestamp, side, price, ordStatus}) > 100) this.orders.pop();
     }
   }
 }

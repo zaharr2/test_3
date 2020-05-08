@@ -1,13 +1,13 @@
 <template lang="pug">
   .home
     .home__pairs
-      Pairs(v-model="selected" @subscribe="subscriber('subscribe', 'instrument')" ref="pairs")
+      Pairs(v-model="selected")
     .home__qotes
-      Quotes(:quotes="quotes" @subscribe="subscriber('subscribe', `tradeBin1m:${selected.pairSymbol}`)" ref="quotes")
+      Quotes(:selected="selected")
     .home__order-form
-      OrderForm(:selected="selected" @sendForm="pushToOrdersHistory")
+      OrderForm(:selected="selected")
     .home__orders-history
-      OrdersHistory(ref="ordersHistory")
+      OrdersHistory
 </template>
 
 <script>
@@ -15,6 +15,7 @@ import Pairs from "@/components/Pairs";
 import Quotes from "@/components/Quotes";
 import OrderForm from "@/components/OrderForm";
 import OrdersHistory from "@/components/OrdersHistory";
+import EventBus from "@/event-bus";
 
 export default {
   name: "Home",
@@ -24,7 +25,6 @@ export default {
       selected: {
         pairSymbol: ""
       },
-      quotes: [],
       webSocket: undefined
     }
   },
@@ -32,12 +32,13 @@ export default {
     "selected.pairSymbol": {
       handler(newSelectedPairSymbol, oldSelectedPairSymbol) {
         if (oldSelectedPairSymbol) this.subscriber("unsubscribe", `tradeBin1m:${oldSelectedPairSymbol}`);
-        this.$refs.quotes.getQuotes(newSelectedPairSymbol);
       }
     }
   },
   mounted() {
     this.goLive()
+    EventBus.$on("subscribeForQuotes", () => this.subscriber('subscribe', `tradeBin1m:${this.selected.pairSymbol}`))
+    EventBus.$on("subscribeForPairs", () => this.subscriber('subscribe', 'instrument'))
   },
   methods: {
     goLive() {
@@ -70,7 +71,7 @@ export default {
           this.pairsHandler(data);
           break;
         case "tradeBin1m":
-          this.qoutesHandler(data);
+          this.quotesHandler(data);
           break;
         default:
           console.log("table: ", data);
@@ -80,17 +81,17 @@ export default {
     pairsHandler(data) {
       switch(data.action) {
         case "update":
-          this.$refs.pairs.updateData(data.data)
+          EventBus.$emit("updatePairs", data.data)
           break;
         default:
           console.log("action: ", data.action);
           break;
       }
     },
-    qoutesHandler(data) {
+    quotesHandler(data) {
       switch(data.action) {
         case "insert":
-          this.$refs.quotes.updateData(data.data);
+          EventBus.$emit("updateQuotes", data.data)
           break;
         default:
           console.log("action: ", data.action);
@@ -99,9 +100,6 @@ export default {
     },
     subscriber(op, args) {
       if (this.webSocket) this.webSocket.send(`{"op": "${op}", "args": "${args}"}`);
-    },
-    pushToOrdersHistory(order) {
-      this.$refs.ordersHistory.updateData(order)
     }
   }
 };

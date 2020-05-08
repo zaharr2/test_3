@@ -24,12 +24,34 @@
 </template>
 
 <script>
+import EventBus from "@/event-bus";
+
 export default {
   name: "Quotes",
+  props: {
+    selected: {
+      type: Object,
+      default: () => {
+        return {
+          pairSymbol: ""
+        }
+      }
+    }
+  },
   data() {
     return {
       quotes: []
     }
+  },
+  watch: {
+    "selected.pairSymbol": {
+      handler(symbol) {
+        this.getQuotes(symbol)
+      }
+    }
+  },
+  mounted() {
+    EventBus.$on("updateQuotes", payload => this.updateData(payload))
   },
   methods: {
     formatDate(date) {
@@ -48,8 +70,11 @@ export default {
         .then(response => response.json())
         .then(data => {
           if (!data.error) {
-            this.quotes = data;
-            this.$emit("subscribe");
+            this.quotes = data.map(el => {
+              let {timestamp, open, high, low, close, grossValue} = { ...el };
+              return {timestamp, open, high, low, close, grossValue}
+            });
+            EventBus.$emit("subscribeForQuotes")
           }
         })
         .catch(error => {
@@ -58,17 +83,10 @@ export default {
     },
     updateData(data) {
       data.map(el => {
-        return {
-          timestamp: el.timestamp,
-          open: el.open,
-          high: el.high,
-          low: el.low,
-          close: el.close,
-          grossValue: el.grossValue // TODO: не существующий параметр?
-        }
+        let {timestamp, open, high, low, close, grossValue} = { ...el };
+        return {timestamp, open, high, low, close, grossValue}
       }).forEach(el => {
-        this.quotes.pop();
-        this.quotes.unshift(el);
+        if (this.quotes.unshift(el) > 100) this.quotes.pop();
       })
     }
   }

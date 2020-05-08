@@ -13,6 +13,8 @@
 </template>
 
 <script>
+import EventBus from "@/event-bus";
+
 export default {
   name: "Pairs",
   props: {
@@ -32,6 +34,7 @@ export default {
   },
   mounted() {
     this.getPairs()
+    EventBus.$on("updatePairs", payload => this.updateData(payload))
   },
   methods: {
     getPairs() {
@@ -41,8 +44,11 @@ export default {
         .then(response => response.json())
         .then(data => {
           if (!data.error) {
-            this.pairs = data;
-            this.$emit("subscribe")
+            this.pairs = data.map(el => {
+              let {symbol, lastPrice} = { ...el };
+              return {symbol, lastPrice}
+            });
+            EventBus.$emit("subscribeForPairs")
           }
         })
         .catch(error => {
