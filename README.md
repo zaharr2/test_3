@@ -1,5 +1,3 @@
-# client
-
 ## Project setup
 ```
 npm install
