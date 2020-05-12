@@ -10,7 +10,6 @@
 
 <script>
 import crypto from "crypto";
-import EventBus from "@/event-bus";
 
 export default {
   name: "OrderForm",
@@ -20,18 +19,18 @@ export default {
       default: () => {
         return {
           pairSymbol: ""
-        }
+        };
       }
     }
   },
   data() {
     return {
       orderQty: 1
-    }
+    };
   },
   computed: {
     isDisabled() {
-      return !this.selected.pairSymbol.length
+      return !this.selected.pairSymbol.length;
     }
   },
   methods: {
@@ -41,8 +40,8 @@ export default {
       }
     },
     sendForm(side) {
-      let path = '/api/v1/order';
-      let verb = 'POST';
+      let path = "/api/v1/order";
+      let verb = "POST";
       let expires = Math.round(new Date().getTime() / 1000) + 60;
       let body = {
         ordType: "Market",
@@ -51,14 +50,17 @@ export default {
         side: side
       };
       let postBody = JSON.stringify(body);
-      let signature = crypto.createHmac('sha256', process.env.VUE_APP_API_SECRET).update(verb + path + expires.toFixed() + postBody).digest('hex');
+      let signature = crypto
+        .createHmac("sha256", process.env.VUE_APP_API_SECRET)
+        .update(verb + path + expires.toFixed() + postBody)
+        .digest("hex");
       let headers = {
-        'content-type': 'application/json',
-        'Accept': 'application/json',
-        'X-Requested-With': 'XMLHttpRequest',
-        'api-expires': expires,
-        'api-key': process.env.VUE_APP_API_KEY,
-        'api-signature': signature
+        "content-type": "application/json",
+        Accept: "application/json",
+        "X-Requested-With": "XMLHttpRequest",
+        "api-expires": expires,
+        "api-key": process.env.VUE_APP_API_KEY,
+        "api-signature": signature
       };
       let requestOptions = {
         headers: headers,
@@ -70,12 +72,12 @@ export default {
         .then(response => response.json())
         .then(data => {
           // if (!data.error) this.$emit("sendForm", data)
-          if (!data.error) EventBus.$emit("orderCreated", data)
+          if (!data.error) this.$emit("orderCreated", data);
         })
         .catch(error => {
           console.log("sendForm error:", error);
-        })
+        });
     }
   }
-}
+};
 </script>
